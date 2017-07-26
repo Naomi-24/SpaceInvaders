@@ -10,38 +10,40 @@ EnemyShip::~EnemyShip()
 {
 
 }
-
-/*EnemyShip::Draw()
-{
-
-}
-d EnemyShip::Update()
+/*
+EnemyShip::Draw()
 {
 
 }
 
-EnemyShip::GetPos()
+EnemyShip::Update()
+{
+
+}
+*/
+ngl::Vec3 EnemyShip::GetPos()
+{
+    return m_pos;
+}
+
+void EnemyShip::SetPos()
 {
 
 }
 
-EnemyShip::SetPos()
+/*EnemyShip::MoveShip()
 {
 
 }
 
-EnemyShip::MoveShip()
+int EnemyShip::getLife()
+{
+    return m_health;
+}
+
+void EnemyShip::setLife()
 {
 
 }
 
-EnemyShip::getLife()
-{
-
-}
-
-EnemyShip::setLife()
-{
-
-}
 */
