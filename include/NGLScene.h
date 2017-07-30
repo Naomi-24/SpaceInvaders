@@ -77,13 +77,15 @@ private:
     /// @param _event the Qt Event structure
     //----------------------------------------------------------------------------------------------------------------------
     void wheelEvent( QWheelEvent *_event) override;
+    //Overriden timer event, this will update the game. //Ben
+    void timerEvent(QTimerEvent * t) override;
+
     /// @brief windows parameters for mouse control etc.
     WinParams m_win;
     /// position for our model
     ngl::Vec3 m_modelPos;
 
     std::unique_ptr<EnemyShip> m_enemy;
-
 };
 
 

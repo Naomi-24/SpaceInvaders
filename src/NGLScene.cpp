@@ -10,6 +10,9 @@ NGLScene::NGLScene()
 {
   // re-size the widget to that of the parent (in this case the GLFrame passed in on construction)
   setTitle("Blank NGL");
+
+  //Gonna make the timer call our update function every 20 ms.
+  startTimer( 20 );
 }
 
 
@@ -71,7 +74,9 @@ void NGLScene::keyPressEvent(QKeyEvent *_event)
   case Qt::Key_Space :
       m_win.spinXFace=0;
       m_win.spinYFace=0;
-      m_modelPos.set(ngl::Vec3::zero());
+      //Pretty sure ngl::Vec3 defaul constructs to be zeroed. My version of ngl is not new enough
+      //to have ngl::zero //Ben
+      m_modelPos.set(ngl::Vec3());
 
   break;
   default : break;
@@ -79,4 +84,15 @@ void NGLScene::keyPressEvent(QKeyEvent *_event)
   // finally update the GLWindow and re-draw
 
     update();
+}
+
+void NGLScene::timerEvent(QTimerEvent * t)
+{
+    //This is a built in qt function which gets called regularly. The interval is set by making a qt timer,
+    //which fires off every x milliseconds. I set this up in the NGLScene constructor.
+    //Do your updating and stuff in here. It's a good idea to split drawing and updating into two functions,
+    //because it can get confusing if you try to do both at once.
+    //Maybe make a draw() and an update() function and call them in here? It's up to you how you wanna set it up.
+    //Ben
+    std::cout << "Ben's update function!\n";
 }

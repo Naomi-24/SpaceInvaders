@@ -15,6 +15,8 @@ isEqual(QT_MAJOR_VERSION, 5) {
 MOC_DIR=moc
 # on a mac we don't create a .app bundle file ( for ease of multiplatform use)
 CONFIG-=app_bundle
+#Using c++11, yeah baby //Ben
+CONFIG += c++11
 # Auto include all .cpp files in the project src directory (can specifiy individually if required)
 SOURCES+= $$PWD/src/main.cpp \
           $$PWD/src/NGLScene.cpp \
