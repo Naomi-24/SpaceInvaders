@@ -5,11 +5,14 @@
 #include <ngl/NGLInit.h>
 #include <iostream>
 #include "enemyship.h"
+#include <ngl/ShaderLib.h>
+#include <ngl/Transformation.h>
 
 NGLScene::NGLScene()
 {
   // re-size the widget to that of the parent (in this case the GLFrame passed in on construction)
   setTitle("Blank NGL");
+
 }
 
 
@@ -25,12 +28,12 @@ void NGLScene::resizeGL(int _w , int _h)
   m_win.width  = static_cast<int>( _w * devicePixelRatio() );
   m_win.height = static_cast<int>( _h * devicePixelRatio() );
 }
-
+//-----------------------------------------------------------------------------------------------------------
 void NGLScene::createEnemy()
 {
-    m_enemy.reset(new EnemyShip(ngl::Vec3(0.0f,0.0f,0.0f), "models/obs.obj"));
+   // m_enemy.reset(new EnemyShip(ngl::Vec3(0.0f,0.0f,0.0f), "models/obs.obj"));
 }
-
+//-----------------------------------------------------------------------------------------------------------
 
 void NGLScene::initializeGL()
 {
@@ -43,8 +46,32 @@ void NGLScene::initializeGL()
   glEnable(GL_DEPTH_TEST);
   // enable multisampling for smoother drawing
   glEnable(GL_MULTISAMPLE);
+//---------------------------------------------------------------------------------------------------------
+  //Load in the mesh for the enemy ship
+  m_mesh.reset(new ngl::Obj("meshes/SpaceShip.obj"));
+
+  std::string name = "blinn";
+  std::string vert = "PhongVertex";
+  std::string frag = "PhongFragment";
 
 
+  //Load in shaders
+  ngl::ShaderLib * slib = ngl::ShaderLib::instance(); //grabbin a ptr to a shader manage
+  slib->createShaderProgram(name);
+  slib->attachShader(vert, ngl::ShaderType::VERTEX);
+  slib->attachShader(frag, ngl::ShaderType::FRAGMENT);
+
+  slib->loadShaderSource(vert, "shaders/" + vert + ".glsl");
+  slib->loadShaderSource(frag, "shaders/" + frag + ".glsl");
+
+  slib->compileShader(vert);
+  slib->compileShader(frag);
+
+  slib->attachShaderToProgram(name, vert);
+  slib->attachShaderToProgram(name, frag);
+
+  slib->linkProgramObject(name);
+//--------------------------------------------------------------------------------------------------------
 
 }
 
@@ -56,6 +83,31 @@ void NGLScene::paintGL()
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glViewport(0,0,m_win.width,m_win.height);
 
+//-----------------------------------------------------------------------------------------------------------------
+  ///tell opengl where the camera is
+  ngl::Mat4 V = ngl::lookAt(
+              ngl::Vec3(10, 0, 0),
+              ngl::Vec3(0, 0, 0),
+              ngl::Vec3(0, 1, 0)
+              );
+  ///takes object and turns into screenspace
+  ngl::Mat4 P = ngl::perspective(
+              60.0f,
+              m_win.width / (float)m_win.height,  ///calc the aspect ratio in float so it doesn't fuck up ints
+              0.1f, ///clipping plane sortof near
+              512.0f  ///clipping far plane
+              );
+  ///Create the MVP
+  m_VP = V*P;
+  ///this transformation matrix make sit easier to move the model around in the future
+  ngl::Transformation T;
+  T.setPosition(m_modelPos);
+  ngl::Mat4 M = T.getMatrix();
+
+  ngl::ShaderLib * slib = ngl::ShaderLib::instance(); ///grab the manger again bc we gonna use the shader
+  slib->use("blinn"); ///tellin gl which shader to use
+  slib->setRegisteredUniform("MVP", M * m_VP);
+  m_mesh->draw();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -66,7 +118,7 @@ void NGLScene::keyPressEvent(QKeyEvent *_event)
   // we then switch on the key value and set the camera in the GLWindow
   switch (_event->key())
   {
-  // escape key to quite
+  // escape key to quit
   case Qt::Key_Escape : QGuiApplication::exit(EXIT_SUCCESS); break;
   case Qt::Key_Space :
       m_win.spinXFace=0;

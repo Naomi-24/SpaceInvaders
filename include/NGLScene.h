@@ -5,6 +5,7 @@
 #include <QOpenGLWindow>
 #include "WindowParams.h"
 #include "enemyship.h"
+#include <ngl/Mat4.h>
 //----------------------------------------------------------------------------------------------------------------------
 /// @file NGLScene.h
 /// @brief this class inherits from the Qt OpenGLWindow and allows us to use NGL to draw OpenGL
@@ -81,8 +82,13 @@ private:
     WinParams m_win;
     /// position for our model
     ngl::Vec3 m_modelPos;
+    /// model view preojection matrix
+    ngl::Mat4 m_VP;
 
-    std::unique_ptr<EnemyShip> m_enemy;
+    //std::unique_ptr<EnemyShip> m_enemy;
+
+    ///mesh pointer declared
+    std::unique_ptr<ngl::Obj> m_mesh;
 
 };
 

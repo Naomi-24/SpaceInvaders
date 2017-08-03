@@ -3,6 +3,7 @@
 
 #include "enemymodel.h"
 #include "gameobject.h"
+
 //----------------------------------------------------------------------------------------------------------------------
 /// @file EnemyShip.h
 /// @brief this class inherits from GameEntity

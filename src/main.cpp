@@ -25,7 +25,7 @@ int main(int argc, char **argv)
     format.setMajorVersion(4);
     format.setMinorVersion(3);
   #endif
-  // now we are going to set to CoreProfile OpenGL so we can't use and old Immediate mode GL
+  // now we are going to set to CoreProfile OpenGL so we can't use an old Immediate mode GL
   format.setProfile(QSurfaceFormat::CoreProfile);
   // now set the depth buffer to 24 bits
   format.setDepthBufferSize(24);
@@ -39,7 +39,7 @@ int main(int argc, char **argv)
   window.resize(1024, 720);
   // and finally show
   window.show();
-
+  //EnemyShip Invader;
   return app.exec();
 }
 
