@@ -4,8 +4,9 @@
 
 #include <QOpenGLWindow>
 #include "WindowParams.h"
-#include "enemyship.h"
+#include "playership.h"
 #include <ngl/Mat4.h>
+#include <QMap>
 //----------------------------------------------------------------------------------------------------------------------
 /// @file NGLScene.h
 /// @brief this class inherits from the Qt OpenGLWindow and allows us to use NGL to draw OpenGL
@@ -78,17 +79,35 @@ private:
     /// @param _event the Qt Event structure
     //----------------------------------------------------------------------------------------------------------------------
     void wheelEvent( QWheelEvent *_event) override;
+
+    //----------------------------------------------------------------------------------------------------------------------
+    /// @brief
+    /// my code
+    /// @param
+    //----------------------------------------------------------------------------------------------------------------------
+    void timerEvent(QTimerEvent *event) override;
+
     /// @brief windows parameters for mouse control etc.
     WinParams m_win;
     /// position for our model
     ngl::Vec3 m_modelPos;
     /// model view preojection matrix
     ngl::Mat4 m_VP;
+    /// velocity
+    ngl::Vec3 m_modelVel;
 
-    //std::unique_ptr<EnemyShip> m_enemy;
+    PlayerShip *m_player;
+ /*   QMap<int, EnemyShip> m_enemies;
 
+    for(int i=0, i<10, i++)
+    {
+        m_enemies[i] = new EnemyShip();
+        m_enemies[i]->setID(i);  //
+    };
+*/
     ///mesh pointer declared
-    std::unique_ptr<ngl::Obj> m_mesh;
+    std::unique_ptr<ngl::Obj> m_playerMesh;
+    std::unique_ptr<ngl::Obj> m_enemyMesh;
 
 };
 
