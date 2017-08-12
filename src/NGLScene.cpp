@@ -7,7 +7,9 @@
 #include "playership.h"
 #include <ngl/ShaderLib.h>
 #include <ngl/Transformation.h>
+#include <ngl/NGLStream.h>
 
+/// enum for different player ship models
 enum Model {
     BASIC,
     EXTENDED,
@@ -34,10 +36,14 @@ void NGLScene::resizeGL(int _w , int _h)
   m_win.width  = static_cast<int>( _w * devicePixelRatio() );
   m_win.height = static_cast<int>( _h * devicePixelRatio() );
 }
+
 //-----------------------------------------------------------------------------------------------------------
-void NGLScene::createEnemy()
+void NGLScene::createEnemy(ngl::Vec3 _spawnPos)
 {
-   // m_enemy.reset(new EnemyShip(ngl::Vec3(0.0f,0.0f,0.0f), "models/obs.obj"));
+    ///create enemy object
+   //PlayerShip invader (_spawnPos, 0);
+    ///add it to the vector
+   //m_enemies.push_back(invader);
 }
 //-----------------------------------------------------------------------------------------------------------
 
@@ -56,10 +62,13 @@ void NGLScene::initializeGL()
 //---------------------------------------------------------------------------------------------------------
 
   m_player = new PlayerShip(ngl::Vec3(0.0f,0.0f,0.0f), BASIC);
-  ///Load in the mesh for the enemy ship
+  ///Load in the mesh for the Player ship
   m_playerMesh.reset(new ngl::Obj("meshes/SpaceShip.obj"));
   m_playerMesh->createVAO();
 
+//---------------------------------------------------------------------------------------------------------
+
+  ///Let's setup the shaders to get something onscreen
   std::string name = "blinn";
   std::string vert = "PhongVertex";
   std::string frag = "PhongFragment";
@@ -91,7 +100,6 @@ void NGLScene::initializeGL()
 }
 
 
-
 void NGLScene::paintGL()
 {
   // clear the screen and depth buffer
@@ -116,12 +124,14 @@ void NGLScene::paintGL()
   m_VP = V*P;
   ///this transformation matrix make sit easier to move the model around in the future
   ngl::Transformation T;
-  T.setPosition(m_modelPos);
+  T.setPosition(m_player->getPos());
   ngl::Mat4 M = T.getMatrix();
-
-  ngl::ShaderLib * slib = ngl::ShaderLib::instance(); ///grab the manager again bc we gonna use the shader
-  slib->use("blinn"); ///tellin gl which shader to use
+  ///grab the manager again bc we gonna use the shader
+  ngl::ShaderLib * slib = ngl::ShaderLib::instance();
+  ///tellin gl which shader to use
+  slib->use("blinn");
   slib->setRegisteredUniform("MVP", M * m_VP);
+  ///draw the mesh
   m_playerMesh->draw();
 }
 
@@ -134,26 +144,33 @@ void NGLScene::keyPressEvent(QKeyEvent *_event)
   switch (_event->key())
   {
   // escape key to quit
-  case Qt::Key_Escape : QGuiApplication::exit(EXIT_SUCCESS); break;
+  case Qt::Key_Escape : QGuiApplication::exit(EXIT_SUCCESS);
+  break;
   case Qt::Key_Space :
       m_win.spinXFace=0;
       m_win.spinYFace=0;
+      ///returns player ship model to 0,0,0
       m_modelPos.set(ngl::Vec3::zero());
 
   break;
-      ///---------------------------my code below
+  //---------------------------my code below
   /// W key to accelerate player up vertically
   case Qt::Key_W :
         m_player->setVelocity(m_player->getVelocity()+ ngl::Vec3(0.0, 0.05, 0.0));
   break;
-  /// S key to accerler
+  /// S key to deccelerate
   case Qt::Key_S :
-       m_player->setVelocity(m_player->getVelocity()+ ngl::Vec3(0.0, -0.05, 0.0));
+        m_player->setVelocity(m_player->getVelocity()+ ngl::Vec3(0.0, -0.05, 0.0));
+  break;
+  /// A to strafe left
+  case Qt::Key_A :
+        m_player->setVelocity(m_player->getVelocity()+ ngl::Vec3(0.0, 0.0, 0.05));
+  break;
+  /// D to strafe right
+  case Qt::Key_D :
+        m_player->setVelocity(m_player->getVelocity()+ ngl::Vec3(0.0, 0.0, -0.05));
   break;
 
-  //case Qt::Key_S :
- //             m_modelVel += ngl::Vec3(0.0, -0.05, 0.0);
- // break;
   default : break;
   }
   /// finally update the GLWindow and re-draw
@@ -164,83 +181,22 @@ void NGLScene::keyPressEvent(QKeyEvent *_event)
 //----------------------------------------------------------------------------------------------------------------------
 void NGLScene::mouseMoveEvent( QMouseEvent* _event )
 {
-  // note the method buttons() is the button state when event was called
-  // that is different from button() which is used to check which button was
-  // pressed when the mousePress/Release event is generated
-  if ( m_win.rotate && _event->buttons() == Qt::LeftButton )
-  {
-    int diffx = _event->x() - m_win.origX;
-    int diffy = _event->y() - m_win.origY;
-    m_win.spinXFace += static_cast<int>( 0.5f * diffy );
-    m_win.spinYFace += static_cast<int>( 0.5f * diffx );
-    m_win.origX = _event->x();
-    m_win.origY = _event->y();
-    update();
-  }
-  // right mouse translate code
-  else if ( m_win.translate && _event->buttons() == Qt::RightButton )
-  {
-    int diffX      = static_cast<int>( _event->x() - m_win.origXPos );
-    int diffY      = static_cast<int>( _event->y() - m_win.origYPos );
-    m_win.origXPos = _event->x();
-    m_win.origYPos = _event->y();
-    m_modelPos.m_x += INCREMENT * diffX;
-    m_modelPos.m_y -= INCREMENT * diffY;
-    update();
-  }
-}
 
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 void NGLScene::mousePressEvent( QMouseEvent* _event )
 {
   // that method is called when the mouse button is pressed in this case we
-  // store the value where the maouse was clicked (x,y) and set the Rotate flag to true
-  if ( _event->button() == Qt::LeftButton )
-  {
-    m_win.origX  = _event->x();
-    m_win.origY  = _event->y();
-    m_win.rotate = true;
-  }
-  // right mouse translate mode
-  else if ( _event->button() == Qt::RightButton )
-  {
-    m_win.origXPos  = _event->x();
-    m_win.origYPos  = _event->y();
-    m_win.translate = true;
-  }
+
+ // if ( _event->button() == Qt::LeftButton )
+
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 void NGLScene::mouseReleaseEvent( QMouseEvent* _event )
 {
-  // that event is called when the mouse button is released
-  // we then set Rotate to false
-  if ( _event->button() == Qt::LeftButton )
-  {
-    m_win.rotate = false;
-  }
-  // right mouse translate mode
-  if ( _event->button() == Qt::RightButton )
-  {
-    m_win.translate = false;
-  }
-}
 
-//----------------------------------------------------------------------------------------------------------------------
-void NGLScene::wheelEvent( QWheelEvent* _event )
-{
-
-  // check the diff of the wheel position (0 means no change)
-  if ( _event->delta() > 0 )
-  {
-    m_modelPos.m_z += ZOOM;
-  }
-  else if ( _event->delta() < 0 )
-  {
-    m_modelPos.m_z -= ZOOM;
-  }
-  update();
 }
 
 //-----------------------------------------------------------------------------------------------------------------------
@@ -248,8 +204,38 @@ void NGLScene::timerEvent(QTimerEvent *event)
 {
 
     std::cout << "Timer\n";
-    m_modelPos += m_player->getVelocity();
+    ///update player position
+    m_player->setPos(m_player->getPos() + m_player->getVelocity());
+    ///update player velocity
     m_player->setVelocity(m_player->getVelocity()* 0.95f);
+
+    //-----------------Player/Screen Border Detection
+    if (m_player->getPos().m_z > 40.0)
+    {
+        m_player->setVelocity(ngl::Vec3(0.0,0.0,-1.0));
+        std::cout << "Player has gone offscreen.\n";
+    }
+
+    if (m_player->getPos().m_z < -40.0)
+    {
+        m_player->setVelocity(ngl::Vec3(0.0,0.0,1.0));
+        std::cout << "Player has gone offscreen.\n";
+    }
+
+    if (m_player->getPos().m_y > 30.0)
+    {
+        m_player->setVelocity(ngl::Vec3(0.0,-1.0,0.0));
+        std::cout << "Player has gone offscreen.\n";
+    }
+
+    if (m_player->getPos().m_y < -30.0)
+    {
+        m_player->setVelocity(ngl::Vec3(0.0,1.0,0.0));
+        std::cout << "Player has gone offscreen.\n";
+    }
+    //--------------------------------------------------
+
     paintGL();
     update();
+    std::cout << m_player->getPos();
 }
