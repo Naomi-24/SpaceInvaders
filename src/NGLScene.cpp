@@ -8,9 +8,11 @@
 #include <ngl/ShaderLib.h>
 #include <ngl/Transformation.h>
 #include <ngl/NGLStream.h>
+#include <QDebug>
 
 /// enum for different player ship models
-enum Model {
+enum Model
+{
     BASIC,
     EXTENDED,
     LUXURIOUS
@@ -41,9 +43,11 @@ void NGLScene::resizeGL(int _w , int _h)
 void NGLScene::createEnemy(ngl::Vec3 _spawnPos)
 {
     ///create enemy object
-   //PlayerShip invader (_spawnPos, 0);
+   PlayerShip invader (_spawnPos, 0);
+
     ///add it to the vector
-   //m_enemies.push_back(invader);
+   m_enemies.push_back(&invader);
+   std::cout<< "spawning " << m_enemies.size() << '\n';
 }
 //-----------------------------------------------------------------------------------------------------------
 
@@ -63,8 +67,20 @@ void NGLScene::initializeGL()
 
   m_player = new PlayerShip(ngl::Vec3(0.0f,0.0f,0.0f), BASIC);
   ///Load in the mesh for the Player ship
-  m_playerMesh.reset(new ngl::Obj("meshes/SpaceShip.obj"));
+  m_playerMesh.reset(new ngl::Obj("meshes/Player.obj"));
   m_playerMesh->createVAO();
+  ///Load in the mesh for the Enemy ship
+  m_enemyMesh.reset(new ngl::Obj("meshes/Invader.obj"));
+  m_enemyMesh->createVAO();
+
+  /// Checking co-ordinates of Player bounding box
+  std::cout << "Max x of player BBox is " << m_playerMesh->getBBox().maxX() << std::endl;
+  std::cout << "Min x of player BBox is " << m_playerMesh->getBBox().minX() << std::endl;
+  std::cout << "Max y of player BBox is " << m_playerMesh->getBBox().maxY() << std::endl;
+  std::cout << "Max y of player BBox is " << m_playerMesh->getBBox().minY() << std::endl;
+  std::cout << "Max z of player BBox is " << m_playerMesh->getBBox().maxZ() << std::endl;
+  std::cout << "Min z of player BBox is " << m_playerMesh->getBBox().minZ() << std::endl;
+
 
 //---------------------------------------------------------------------------------------------------------
 
@@ -95,6 +111,9 @@ void NGLScene::initializeGL()
   /// Start the timer that runs throughout the game.
   startTimer(25);
 
+  /// Create Enemies
+  //ngl::Vec3 spawn = ngl::Vec3(0,5,5);
+  createEnemy(ngl::Vec3(0.0f, 10.0f, 10.0f));
 //--------------------------------------------------------------------------------------------------------
 
 }
@@ -131,8 +150,12 @@ void NGLScene::paintGL()
   ///tellin gl which shader to use
   slib->use("blinn");
   slib->setRegisteredUniform("MVP", M * m_VP);
-  ///draw the mesh
+
+  ///draw the meshes
   m_playerMesh->draw();
+  m_enemyMesh->draw();
+
+  //qDebug() << "TESTTSTTST" << m_playerMesh->getBBox().maxX();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -149,8 +172,8 @@ void NGLScene::keyPressEvent(QKeyEvent *_event)
   case Qt::Key_Space :
       m_win.spinXFace=0;
       m_win.spinYFace=0;
-      ///returns player ship model to 0,0,0
-      m_modelPos.set(ngl::Vec3::zero());
+      ///returns player ship to 0,0,0
+      //m_modelPos.set(ngl::Vec3::zero());
 
   break;
   //---------------------------my code below
@@ -203,7 +226,7 @@ void NGLScene::mouseReleaseEvent( QMouseEvent* _event )
 void NGLScene::timerEvent(QTimerEvent *event)
 {
 
-    std::cout << "Timer\n";
+    //std::cout << "Timer\n";
     ///update player position
     m_player->setPos(m_player->getPos() + m_player->getVelocity());
     ///update player velocity
@@ -234,8 +257,7 @@ void NGLScene::timerEvent(QTimerEvent *event)
         std::cout << "Player has gone offscreen.\n";
     }
     //--------------------------------------------------
-
     paintGL();
     update();
-    std::cout << m_player->getPos();
+    //std::cout << m_player->getPos();
 }

@@ -39,7 +39,6 @@ int main(int argc, char **argv)
   window.resize(1024, 720);
   // and finally show
   window.show();
-  //EnemyShip Invader;
   return app.exec();
 }
 

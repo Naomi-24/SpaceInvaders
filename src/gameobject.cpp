@@ -3,8 +3,8 @@
 GameObject::GameObject()
 {
     //assigning mesh from file to m_mesh
-    m_mesh.reset(new ngl::Obj("mesh/Player.obj"));
-    m_mesh->createVAO(); // creatin array of vertex thingies from the mesh loaded in
+    //m_mesh.reset(new ngl::Obj("meshes/Player.obj"));
+    //m_mesh->createVAO(); // creatin array of vertex thingies from the mesh loaded in
 }
 
 GameObject::~GameObject()
@@ -20,7 +20,7 @@ void GameObject::setPos(ngl::Vec3 _pos)
 
 void GameObject::draw()
 {
-    m_mesh->draw(); //this draw() is the ngl draw function, not a repeat of GameObject::draw()
+    //m_mesh->draw(); //this draw() is the ngl draw function, not a repeat of GameObject::draw()
 }
 
 void GameObject::update()

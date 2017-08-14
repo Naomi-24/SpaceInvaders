@@ -42,7 +42,7 @@ class NGLScene : public QOpenGLWindow
     ~NGLScene();
 
     //----------------------------------------------------------------------------------------------------------------------
-    /// @brief
+    /// @brief function that instantiates an enemy Invader
     /// @param position of enemy spawn
     //----------------------------------------------------------------------------------------------------------------------
     void createEnemy(ngl::Vec3 _spawnPos);
@@ -122,7 +122,7 @@ private:
     PlayerShip *m_player;
 
     ///vector of enemy ships (stores enemies)
-    std::vector <PlayerShip> m_enemies;
+    std::vector <PlayerShip*> m_enemies;
 
  /*   QMap<int, EnemyShip> m_enemies;
 
