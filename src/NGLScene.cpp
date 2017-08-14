@@ -42,11 +42,9 @@ void NGLScene::resizeGL(int _w , int _h)
 //-----------------------------------------------------------------------------------------------------------
 void NGLScene::createEnemy(ngl::Vec3 _spawnPos)
 {
-    ///create enemy object
-   PlayerShip invader (_spawnPos, 0);
-
-    ///add it to the vector
-   m_enemies.push_back(&invader);
+   /// Add a new instance of an enemy to the storage vector
+   m_enemies.push_back(new PlayerShip(_spawnPos, BASIC));
+   ///print out vector size to see how many enemies have been spawned
    std::cout<< "spawning " << m_enemies.size() << '\n';
 }
 //-----------------------------------------------------------------------------------------------------------
@@ -65,6 +63,7 @@ void NGLScene::initializeGL()
 
 //---------------------------------------------------------------------------------------------------------
 
+  ///Create new instance of the player
   m_player = new PlayerShip(ngl::Vec3(0.0f,0.0f,0.0f), BASIC);
   ///Load in the mesh for the Player ship
   m_playerMesh.reset(new ngl::Obj("meshes/Player.obj"));
@@ -91,7 +90,9 @@ void NGLScene::initializeGL()
 
 
   ///Load in shaders
-  ngl::ShaderLib * slib = ngl::ShaderLib::instance(); ///grabbin a ptr to a shader manage
+  ///
+  ///grabbin a ptr to a shader manage
+  ngl::ShaderLib * slib = ngl::ShaderLib::instance();
   slib->createShaderProgram(name);
   slib->attachShader(vert, ngl::ShaderType::VERTEX);
   slib->attachShader(frag, ngl::ShaderType::FRAGMENT);
@@ -132,27 +133,39 @@ void NGLScene::paintGL()
               ngl::Vec3(0, 0, 0),
               ngl::Vec3(0, 1, 0)
               );
+
   ///takes object and turns into screenspace
   ngl::Mat4 P = ngl::perspective(
               60.0f,
-              m_win.width / (float)m_win.height,  ///calc the aspect ratio in float so it doesn't fuck up ints
-              0.1f, ///clipping plane sortof near
-              512.0f  ///clipping far plane
+              ///calc the aspect ratio in float so it doesn't fuck up ints
+              m_win.width / (float)m_win.height,
+              ///clipping plane sortof near
+              0.1f,
+              ///clipping far plane
+              512.0f
               );
+
   ///Create the MVP
   m_VP = V*P;
+
   ///this transformation matrix make sit easier to move the model around in the future
   ngl::Transformation T;
-  T.setPosition(m_player->getPos());
-  ngl::Mat4 M = T.getMatrix();
+
   ///grab the manager again bc we gonna use the shader
   ngl::ShaderLib * slib = ngl::ShaderLib::instance();
+
   ///tellin gl which shader to use
   slib->use("blinn");
-  slib->setRegisteredUniform("MVP", M * m_VP);
 
-  ///draw the meshes
+
+  ///Draw the Meshes
+  /// Player
+  T.setPosition(m_player->getPos());
+  slib->setRegisteredUniform("MVP", T.getMatrix() * m_VP);
   m_playerMesh->draw();
+  ///Enemy
+  T.setPosition(m_enemies[0]->getPos()); ///in future this will use spawn position
+  slib->setRegisteredUniform("MVP", T.getMatrix() * m_VP);
   m_enemyMesh->draw();
 
   //qDebug() << "TESTTSTTST" << m_playerMesh->getBBox().maxX();
