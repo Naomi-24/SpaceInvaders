@@ -43,7 +43,7 @@ void NGLScene::resizeGL(int _w , int _h)
 void NGLScene::createEnemy(ngl::Vec3 _spawnPos)
 {
    /// Add a new instance of an enemy to the storage vector
-   m_enemies.push_back(new PlayerShip(_spawnPos, BASIC));
+   m_enemies.push_back(std::unique_ptr<PlayerShip>(new PlayerShip(_spawnPos, BASIC)));
    ///print out vector size to see how many enemies have been spawned
    std::cout<< "spawning " << m_enemies.size() << '\n';
 }
@@ -68,9 +68,7 @@ void NGLScene::initializeGL()
   ///Load in the mesh for the Player ship
   m_playerMesh.reset(new ngl::Obj("meshes/Player.obj"));
   m_playerMesh->createVAO();
-  ///Load in the mesh for the Enemy ship
-  m_enemyMesh.reset(new ngl::Obj("meshes/Invader.obj"));
-  m_enemyMesh->createVAO();
+
 
   /// Checking co-ordinates of Player bounding box
   std::cout << "Max x of player BBox is " << m_playerMesh->getBBox().maxX() << std::endl;
@@ -114,7 +112,14 @@ void NGLScene::initializeGL()
 
   /// Create Enemies
   //ngl::Vec3 spawn = ngl::Vec3(0,5,5);
-  createEnemy(ngl::Vec3(0.0f, 10.0f, 10.0f));
+  for(int i = 0; i < 5; ++i){
+    createEnemy(ngl::Vec3(0.0f, 10.0f, 10.0f + i * 2.5f));
+    ///Load in the mesh for the Enemy ship
+    m_enemies[i]->m_mesh.reset(new ngl::Obj("meshes/Invader.obj"));
+    m_enemies[i]->m_mesh->createVAO();
+
+  }
+
 //--------------------------------------------------------------------------------------------------------
 
 }
@@ -163,10 +168,15 @@ void NGLScene::paintGL()
   T.setPosition(m_player->getPos());
   slib->setRegisteredUniform("MVP", T.getMatrix() * m_VP);
   m_playerMesh->draw();
-  ///Enemy
-  T.setPosition(m_enemies[0]->getPos()); ///in future this will use spawn position
-  slib->setRegisteredUniform("MVP", T.getMatrix() * m_VP);
-  m_enemyMesh->draw();
+  for(int i = 0; i < 5; ++i){
+    ///Enemy
+    T.setPosition(m_enemies[i]->getPos()); ///in future this will use spawn position
+    slib->setRegisteredUniform("MVP", T.getMatrix() * m_VP);
+    ///Load in the mesh for the Enemy ship
+    m_enemies[i]->m_mesh->draw();
+  }
+
+  m_enemies[2]->setVelocity(m_enemies[2]->getVelocity()+ ngl::Vec3(0.0, 0.05, 0.0));
 
   //qDebug() << "TESTTSTTST" << m_playerMesh->getBBox().maxX();
 }
@@ -239,11 +249,14 @@ void NGLScene::mouseReleaseEvent( QMouseEvent* _event )
 void NGLScene::timerEvent(QTimerEvent *event)
 {
 
-    //std::cout << "Timer\n";
     ///update player position
     m_player->setPos(m_player->getPos() + m_player->getVelocity());
     ///update player velocity
     m_player->setVelocity(m_player->getVelocity()* 0.95f);
+
+    for(int i = 0; i < 5; ++i){
+      m_enemies[i]->setPos(m_enemies[i]->getPos() + m_enemies[i]->getVelocity());
+    }
 
     //-----------------Player/Screen Border Detection
     if (m_player->getPos().m_z > 40.0)

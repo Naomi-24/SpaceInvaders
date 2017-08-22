@@ -38,14 +38,14 @@ public:
     /// @brief setter function for enemy spawn position
     /// @param const ngl::Vec3 spawnPosIn
     //----------------------------------------------------------------------------------------------------------------------
-    ///please move to enemyShip class
+    ///please move to enemyShip class///
     inline void setSpawnPos(const ngl::Vec3 spawnPosIn) {m_spawnPos = spawnPosIn;}
 
     //----------------------------------------------------------------------------------------------------------------------
     /// @brief getter function for enemy spawn position, returns spawn position as vec3
     /// @param none
     //----------------------------------------------------------------------------------------------------------------------
-    ///please move to enemyShip class
+    ///please move to enemyShip class///
     inline ngl::Vec3 getSpawnPos() const {return m_spawnPos;}
 
 private:
@@ -57,8 +57,9 @@ private:
     ///object health
     uint m_health;
 
+    ///please move to enemyShip class///
     ///object start position, when its first instantiated
-    ngl::Vec3 m_spawnPos; ///please move to enemyShip class
+    ngl::Vec3 m_spawnPos;
 
 
 

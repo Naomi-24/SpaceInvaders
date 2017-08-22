@@ -115,29 +115,21 @@ private:
     /// model view preojection matrix
     ngl::Mat4 m_VP;
 
-    /// velocity
-   // ngl::Vec3 m_modelVel;
-
     /// variable for the player ship
     PlayerShip *m_player;
 
+    std::unique_ptr<PlayerShip> boiboi;
+
     ///vector of enemy ships (stores enemies)
-    std::vector <PlayerShip*> m_enemies;
-
- /*   QMap<int, EnemyShip> m_enemies;
-
-    for(int i=0, i<10, i++)
-    {
-        m_enemies[i] = new EnemyShip();
-        m_enemies[i]->setID(i);  //
-    };
-*/
+    std::vector <std::unique_ptr<PlayerShip>> m_enemies;
 
     /// Player Mesh pointer
+    /// please change code so that m_mesh is used through inhenritance instead///
     std::unique_ptr<ngl::Obj> m_playerMesh;
 
     /// Enemy Mesh pointer
-    std::unique_ptr<ngl::Obj> m_enemyMesh;
+    /// no longer used, enemies uses m_mesh through inheritance from GameObject///
+    //std::unique_ptr<ngl::Obj> m_enemyMesh;
 
 };
 

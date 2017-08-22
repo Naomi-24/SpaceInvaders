@@ -16,6 +16,19 @@
 class GameObject
 {
 public:
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///---PUBLIC ATTRIBUTES
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    //----------------------------------------------------------------------------------------------------------------------
+    /// @brief pointer of type ngl::obj thats pointing the address of m_mesh, which will have an obj file assigned to it in
+    /// gameobject.cpp at the moment this is the BASIC model
+    /// @param none
+    /// @note was originally a protected member but instances of derived classes couldn't access it, so was made public for
+    /// simplicity.  Will move back to protected if a workaround is found.
+    //----------------------------------------------------------------------------------------------------------------------
+    std::unique_ptr<ngl::Obj>   m_mesh;
+
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ///---PUBLIC FUNCTIONS
@@ -70,6 +83,7 @@ public:
     //----------------------------------------------------------------------------------------------------------------------
     void move(ngl::Vec3);
 
+
 protected:
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -81,10 +95,6 @@ protected:
 
     ///velocity of object
     ngl::Vec3                   m_velocity;
-
-    ///pointer of type ngl::obj thats pointing the address of m_mesh, which will have an obj file assigned to it in .cpp
-    /// at the moment this is the BASIC model
-    std::unique_ptr<ngl::Obj>   m_mesh;
 
 };
 
