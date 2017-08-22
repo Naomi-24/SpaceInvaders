@@ -195,25 +195,50 @@ void NGLScene::keyPressEvent(QKeyEvent *_event)
   case Qt::Key_Space :
       m_win.spinXFace=0;
       m_win.spinYFace=0;
-      ///returns player ship to 0,0,0
-      //m_modelPos.set(ngl::Vec3::zero());
-
   break;
+
   //---------------------------my code below
+  /// WASD Controls
+
   /// W key to accelerate player up vertically
   case Qt::Key_W :
         m_player->setVelocity(m_player->getVelocity()+ ngl::Vec3(0.0, 0.05, 0.0));
   break;
+
   /// S key to deccelerate
   case Qt::Key_S :
         m_player->setVelocity(m_player->getVelocity()+ ngl::Vec3(0.0, -0.05, 0.0));
   break;
+
   /// A to strafe left
   case Qt::Key_A :
         m_player->setVelocity(m_player->getVelocity()+ ngl::Vec3(0.0, 0.0, 0.05));
   break;
+
   /// D to strafe right
   case Qt::Key_D :
+        m_player->setVelocity(m_player->getVelocity()+ ngl::Vec3(0.0, 0.0, -0.05));
+  break;
+
+  /// ARROW Controls for filthy casuals,scrubs & n00bs
+
+  /// UP key to accelerate player up vertically
+  case Qt::Key_Up:
+        m_player->setVelocity(m_player->getVelocity()+ ngl::Vec3(0.0, 0.05, 0.0));
+  break;
+
+  /// S key to deccelerate
+  case Qt::Key_Down :
+        m_player->setVelocity(m_player->getVelocity()+ ngl::Vec3(0.0, -0.05, 0.0));
+  break;
+
+  /// A to strafe left
+  case Qt::Key_Left :
+        m_player->setVelocity(m_player->getVelocity()+ ngl::Vec3(0.0, 0.0, 0.05));
+  break;
+
+  /// D to strafe right
+  case Qt::Key_Right:
         m_player->setVelocity(m_player->getVelocity()+ ngl::Vec3(0.0, 0.0, -0.05));
   break;
 
@@ -254,11 +279,13 @@ void NGLScene::timerEvent(QTimerEvent *event)
     ///update player velocity
     m_player->setVelocity(m_player->getVelocity()* 0.95f);
 
-    for(int i = 0; i < 5; ++i){
+    ///update enemies position
+    for(int i = 0; i < 5; ++i)
+    {
       m_enemies[i]->setPos(m_enemies[i]->getPos() + m_enemies[i]->getVelocity());
     }
 
-    //-----------------Player/Screen Border Detection
+    ///-----------------Player/Screen Border Detection
     if (m_player->getPos().m_z > 40.0)
     {
         m_player->setVelocity(ngl::Vec3(0.0,0.0,-1.0));
@@ -282,7 +309,7 @@ void NGLScene::timerEvent(QTimerEvent *event)
         m_player->setVelocity(ngl::Vec3(0.0,1.0,0.0));
         std::cout << "Player has gone offscreen.\n";
     }
-    //--------------------------------------------------
+    ///--------------------------------------------------
     paintGL();
     update();
     //std::cout << m_player->getPos();
