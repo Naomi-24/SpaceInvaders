@@ -77,6 +77,9 @@ public:
 		ngl::Vec3 getCollisionCenter() const {return m_collisionCenter;}
 		float getCollisionRadius() const {return m_collisionRadius;}
 
+		//Destroys all the meshes. Call this at the end of the game.
+		static void destroyMeshes();
+
 protected:
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

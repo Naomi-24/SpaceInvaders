@@ -53,4 +53,8 @@ void GameObject::move(ngl::Vec3 _pos)
 
 }
 
-
+void GameObject::destroyMeshes()
+{
+	for(auto &i : s_meshes)
+		delete i.second;
+}
