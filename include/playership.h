@@ -25,14 +25,14 @@ public:
     /// @param ngl::vec3 stores position data
     /// @param int is the filename of the model used.
     //----------------------------------------------------------------------------------------------------------------------
-    PlayerShip(ngl::Vec3, int);
+		PlayerShip(ngl::Vec3, int, const std::string &_id);
     ~PlayerShip();
 
     //----------------------------------------------------------------------------------------------------------------------
     /// @brief setter function for object health
     /// @param const uint& health
     //----------------------------------------------------------------------------------------------------------------------    
-    inline void setHealth(const uint& health) {m_health = health;}
+		void setHealth(const size_t& health) {m_health = health;}
 
     //----------------------------------------------------------------------------------------------------------------------
     /// @brief setter function for enemy spawn position
@@ -55,7 +55,7 @@ private:
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     ///object health
-    uint m_health;
+		size_t m_health;
 
     ///please move to enemyShip class///
     ///object start position, when its first instantiated

@@ -33,6 +33,7 @@ DESTDIR=./
 OTHER_FILES+= README.md
 # were are going to default to a console app
 CONFIG += console
+CONFIG += c++11
 # note each command you add needs a ; as it will be run as a single line
 # first check if we are shadow building or not easiest way is to check out against current
 #!equals(PWD, $${OUT_PWD}){
@@ -57,4 +58,18 @@ isEmpty(NGLPATH){ # note brace must be here
 else{ # note brace must be here
 	message("Using custom NGL location")
 	include($(NGLDIR)/UseNGL.pri)
+}
+win32 {
+    LIBS += -L"C:/NGL/lib/NGL.lib" -lNGL
+    LIBS += -lOpenGL32
+
+    PRE_TARGETDEPS += C:/NGL/lib/NGL.lib
+    INCLUDEPATH += -I c:/boost
+    INCLUDEPATH += C:/NGL/include/
+    DEFINES += GL42
+    DEFINES += WIN32
+    DEFINES += _WIN32
+    DEFINES += _USE_MATH_DEFINES
+    LIBS += -LC:/NGL/lib/ -lNGL
+    DEFINES += NO_DLL
 }

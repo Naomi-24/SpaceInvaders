@@ -43,7 +43,7 @@ void NGLScene::resizeGL(int _w , int _h)
 void NGLScene::createEnemy(ngl::Vec3 _spawnPos)
 {
    /// Add a new instance of an enemy to the storage vector
-   m_enemies.push_back(std::unique_ptr<PlayerShip>(new PlayerShip(_spawnPos, BASIC)));
+	 m_enemies.push_back(std::unique_ptr<PlayerShip>(new PlayerShip(_spawnPos, BASIC, "Invader.obj" )));
    ///print out vector size to see how many enemies have been spawned
    std::cout<< "spawning " << m_enemies.size() << '\n';
 }
@@ -64,7 +64,7 @@ void NGLScene::initializeGL()
 //---------------------------------------------------------------------------------------------------------
 
   ///Create new instance of the player
-  m_player = new PlayerShip(ngl::Vec3(0.0f,0.0f,0.0f), BASIC);
+	m_player = new PlayerShip(ngl::Vec3(0.0f,0.0f,0.0f), BASIC, "Player.obj");
   ///Load in the mesh for the Player ship
   m_playerMesh.reset(new ngl::Obj("meshes/Player.obj"));
   m_playerMesh->createVAO();
@@ -114,9 +114,6 @@ void NGLScene::initializeGL()
   //ngl::Vec3 spawn = ngl::Vec3(0,5,5);
   for(int i = 0; i < 5; ++i){
     createEnemy(ngl::Vec3(0.0f, 10.0f, 10.0f + i * 2.5f));
-    ///Load in the mesh for the Enemy ship
-    m_enemies[i]->m_mesh.reset(new ngl::Obj("meshes/Invader.obj"));
-    m_enemies[i]->m_mesh->createVAO();
 
   }
 
@@ -173,7 +170,7 @@ void NGLScene::paintGL()
     T.setPosition(m_enemies[i]->getPos()); ///in future this will use spawn position
     slib->setRegisteredUniform("MVP", T.getMatrix() * m_VP);
     ///Load in the mesh for the Enemy ship
-    m_enemies[i]->m_mesh->draw();
+		m_enemies[i]->draw();
   }
 
   m_enemies[2]->setVelocity(m_enemies[2]->getVelocity()+ ngl::Vec3(0.0, 0.05, 0.0));
@@ -313,4 +310,17 @@ void NGLScene::timerEvent(QTimerEvent *event)
     paintGL();
     update();
     //std::cout << m_player->getPos();
+}
+
+bool NGLScene::isTouching(const GameObject &_lhs, const GameObject &_rhs)
+{
+	ngl::Vec3 diff = _lhs.getCollisionCenter() - _rhs.getCollisionCenter();
+	float dist = diff.lengthSquared();
+
+	//float dist = diff.length();
+	//if( dist < _lhs.getCollisionRadius() + _rhs.getCollisionRadius() )
+
+	if( dist < (_lhs.getCollisionRadius() * _lhs.getCollisionRadius()) + (_rhs.getCollisionRadius() * _rhs.getCollisionRadius()) )
+		return true;
+	return false;
 }

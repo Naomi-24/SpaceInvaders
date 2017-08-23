@@ -2,8 +2,9 @@
 #define GAMEOBJECT_H
 
 #include "ngl/Vec3.h"
-#include <ngl/Obj.h>
-#include <memory>
+#include "ngl/Obj.h"
+#include <string>
+#include <unordered_map>
 //----------------------------------------------------------------------------------------------------------------------
 /// @file gameobject.h
 /// @brief the basic game entity class used for the game
@@ -20,16 +21,6 @@ public:
     ///---PUBLIC ATTRIBUTES
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    //----------------------------------------------------------------------------------------------------------------------
-    /// @brief pointer of type ngl::obj thats pointing the address of m_mesh, which will have an obj file assigned to it in
-    /// gameobject.cpp at the moment this is the BASIC model
-    /// @param none
-    /// @note was originally a protected member but instances of derived classes couldn't access it, so was made public for
-    /// simplicity.  Will move back to protected if a workaround is found.
-    //----------------------------------------------------------------------------------------------------------------------
-    std::unique_ptr<ngl::Obj>   m_mesh;
-
-
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ///---PUBLIC FUNCTIONS
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -38,7 +29,7 @@ public:
     /// @brief ctr for GameObject class.
     /// @param none
     //----------------------------------------------------------------------------------------------------------------------
-    GameObject();
+		GameObject( const std::string _meshID );
     ~GameObject();
 
     //----------------------------------------------------------------------------------------------------------------------
@@ -83,6 +74,8 @@ public:
     //----------------------------------------------------------------------------------------------------------------------
     void move(ngl::Vec3);
 
+		ngl::Vec3 getCollisionCenter() const {return m_collisionCenter;}
+		float getCollisionRadius() const {return m_collisionRadius;}
 
 protected:
 
@@ -96,6 +89,18 @@ protected:
     ///velocity of object
     ngl::Vec3                   m_velocity;
 
+		//Rather than storing its own mesh, each instance of game object stored an ID.
+		//We use this id to grab the ngl::obj inside s_meshes that we want to use.
+		std::string m_meshID;
+
+private:
+		//All the meshes are going to be stored in this 'map'. It's a bit like an array, but we can access entries with strings rather than ints.
+		static std::unordered_map< std::string, ngl::Obj * > s_meshes;
+		//This function loads a
+		static void loadMesh(const std::string &_id, const std::string &_path );
+
+		ngl::Vec3 m_collisionCenter;
+		float m_collisionRadius;
 };
 
 #endif // GAMEOBJECT_H

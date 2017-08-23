@@ -131,6 +131,7 @@ private:
     /// no longer used, enemies uses m_mesh through inheritance from GameObject///
     //std::unique_ptr<ngl::Obj> m_enemyMesh;
 
+		bool isTouching( const GameObject &_lhs, const GameObject &_rhs );
 };
 
 
