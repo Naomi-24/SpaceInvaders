@@ -166,7 +166,8 @@ void NGLScene::paintGL()
   T.setPosition(m_player->getPos());
   slib->setRegisteredUniform("MVP", T.getMatrix() * m_VP);
   m_playerMesh->draw();
-  for(int i = 0; i < 5; ++i){
+  for(int i = 0; i < 5; ++i)
+  {
     ///Enemy
     T.setPosition(m_enemies[i]->getPos()); ///in future this will use spawn position
     slib->setRegisteredUniform("MVP", T.getMatrix() * m_VP);
@@ -308,6 +309,16 @@ void NGLScene::timerEvent(QTimerEvent *event)
         std::cout << "Player has gone offscreen.\n";
     }
     ///--------------------------------------------------
+
+    for (int i = 0; i<m_enemies.size(); i++)
+    {
+        ///sorry jon i know this is horrible
+        if ( isTouching (*m_player , *(m_enemies[i].get() ) ) )
+        {
+
+        }
+    }
+
     paintGL();
     update();
     //std::cout << m_player->getPos();
@@ -321,7 +332,12 @@ bool NGLScene::isTouching(const GameObject &_lhs, const GameObject &_rhs)
 	//float dist = diff.length();
 	//if( dist < _lhs.getCollisionRadius() + _rhs.getCollisionRadius() )
 
+    std::cout << _lhs.getCollisionRadius()<<","<< _rhs.getCollisionRadius()<<","<<dist<<std::endl;
+
 	if( dist < (_lhs.getCollisionRadius() * _lhs.getCollisionRadius()) + (_rhs.getCollisionRadius() * _rhs.getCollisionRadius()) )
+    {
+        std::cout<<"collision is happening"<<std::endl;
 		return true;
+    }
 	return false;
 }

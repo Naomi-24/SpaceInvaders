@@ -92,14 +92,14 @@ protected:
     ///velocity of object
     ngl::Vec3                   m_velocity;
 
-		//Rather than storing its own mesh, each instance of game object stored an ID.
-		//We use this id to grab the ngl::obj inside s_meshes that we want to use.
+        ///Rather than storing its own mesh, each instance of game object stored an ID.
+        ///We use this id to grab the ngl::obj inside s_meshes that we want to use.
 		std::string m_meshID;
 
 private:
-		//All the meshes are going to be stored in this 'map'. It's a bit like an array, but we can access entries with strings rather than ints.
+        ///All the meshes are going to be stored in this 'map'. It's a bit like an array, but we can access entries with strings rather than ints.
 		static std::unordered_map< std::string, ngl::Obj * > s_meshes;
-		//This function loads a
+        ///This function loads a
 		static void loadMesh(const std::string &_id, const std::string &_path );
 
 		ngl::Vec3 m_collisionCenter;

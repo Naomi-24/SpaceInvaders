@@ -8,12 +8,14 @@ GameObject::GameObject(const std::string _meshID)
     //m_mesh.reset(new ngl::Obj("meshes/Player.obj"));
     //m_mesh->createVAO(); // creatin array of vertex thingies from the mesh loaded in
 
-	//Is our mesh already loaded? If not, load it.
+    ///Is our mesh already loaded? If not, load it.
 	m_meshID = _meshID;
+    ///search for mesh with this id, if it cant be found load one in
 	if(s_meshes.find( m_meshID ) == s_meshes.end())
 		loadMesh( m_meshID, "meshes/" + m_meshID );
+    ///now we can load meshes as we need them
 
-	//Get the center and radius for collisions.
+    ///Get the center and radius for collisions.
 	m_collisionCenter = s_meshes[ m_meshID ]->getSphereCenter();
 	m_collisionRadius = s_meshes[ m_meshID ]->getSphereRadius();
 }
