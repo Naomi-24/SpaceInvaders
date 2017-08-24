@@ -74,10 +74,10 @@ public:
     //----------------------------------------------------------------------------------------------------------------------
     void move(ngl::Vec3);
 
-		ngl::Vec3 getCollisionCenter() const {return m_collisionCenter;}
+        ngl::Vec3 getCollisionCenter() const {return m_collisionCenter + getPos();}
 		float getCollisionRadius() const {return m_collisionRadius;}
 
-		//Destroys all the meshes. Call this at the end of the game.
+        ///Destroys all the meshes. Call this at the end of the game.
 		static void destroyMeshes();
 
 protected:
