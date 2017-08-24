@@ -29,6 +29,7 @@ public:
     /// @brief ctr for GameObject class.
     /// @param none
     //----------------------------------------------------------------------------------------------------------------------
+	GameObject() = default;
 		GameObject( const std::string _meshID );
     ~GameObject();
 
@@ -74,7 +75,7 @@ public:
     //----------------------------------------------------------------------------------------------------------------------
     void move(ngl::Vec3);
 
-		ngl::Vec3 getCollisionCenter() const {return m_collisionCenter;}
+		ngl::Vec3 getCollisionCenter() const {return m_collisionCenter + getPos();}
 		float getCollisionRadius() const {return m_collisionRadius;}
 
 		//Destroys all the meshes. Call this at the end of the game.

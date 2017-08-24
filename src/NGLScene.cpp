@@ -22,7 +22,6 @@ NGLScene::NGLScene()
 {
   // re-size the widget to that of the parent (in this case the GLFrame passed in on construction)
   setTitle("Blank NGL");
-
 }
 
 
@@ -43,8 +42,9 @@ void NGLScene::resizeGL(int _w , int _h)
 //-----------------------------------------------------------------------------------------------------------
 void NGLScene::createEnemy(ngl::Vec3 _spawnPos)
 {
+	std::cout << "Create enemy\n";
    /// Add a new instance of an enemy to the storage vector
-	 m_enemies.push_back(std::unique_ptr<PlayerShip>(new PlayerShip(_spawnPos, BASIC, "Invader.obj" )));
+	 m_enemies.push_back(PlayerShip(_spawnPos, BASIC, "Invader.obj" ));
    ///print out vector size to see how many enemies have been spawned
    std::cout<< "spawning " << m_enemies.size() << '\n';
 }
@@ -65,19 +65,7 @@ void NGLScene::initializeGL()
 //---------------------------------------------------------------------------------------------------------
 
   ///Create new instance of the player
-	m_player = new PlayerShip(ngl::Vec3(0.0f,0.0f,0.0f), BASIC, "Player.obj");
-  ///Load in the mesh for the Player ship
-  m_playerMesh.reset(new ngl::Obj("meshes/Player.obj"));
-  m_playerMesh->createVAO();
-
-
-  /// Checking co-ordinates of Player bounding box
-  std::cout << "Max x of player BBox is " << m_playerMesh->getBBox().maxX() << std::endl;
-  std::cout << "Min x of player BBox is " << m_playerMesh->getBBox().minX() << std::endl;
-  std::cout << "Max y of player BBox is " << m_playerMesh->getBBox().maxY() << std::endl;
-  std::cout << "Max y of player BBox is " << m_playerMesh->getBBox().minY() << std::endl;
-  std::cout << "Max z of player BBox is " << m_playerMesh->getBBox().maxZ() << std::endl;
-  std::cout << "Min z of player BBox is " << m_playerMesh->getBBox().minZ() << std::endl;
+	m_player = PlayerShip(ngl::Vec3(0.0f,0.0f,0.0f),BASIC,"Player.obj");
 
 
 //---------------------------------------------------------------------------------------------------------
@@ -108,16 +96,11 @@ void NGLScene::initializeGL()
   slib->linkProgramObject(name);
   (*slib)[name]->use();
 
-  /// Start the timer that runs throughout the game.
-  startTimer(25);
-
-  /// Create Enemies
   //ngl::Vec3 spawn = ngl::Vec3(0,5,5);
-  for(int i = 0; i < 5; ++i){
+	for(int i = 0; i < 5; ++i)
     createEnemy(ngl::Vec3(0.0f, 10.0f, 10.0f + i * 2.5f));
-
-  }
-
+	/// Start the timer that runs throughout the game.
+	startTimer(25);
 //--------------------------------------------------------------------------------------------------------
 
 }
@@ -163,19 +146,17 @@ void NGLScene::paintGL()
 
   ///Draw the Meshes
   /// Player
-  T.setPosition(m_player->getPos());
+	T.setPosition(m_player.getPos());
   slib->setRegisteredUniform("MVP", T.getMatrix() * m_VP);
-  m_playerMesh->draw();
+	m_player.draw();
   for(int i = 0; i < 5; ++i)
   {
     ///Enemy
-    T.setPosition(m_enemies[i]->getPos()); ///in future this will use spawn position
+		T.setPosition(m_enemies[i].getPos()); ///in future this will use spawn position
     slib->setRegisteredUniform("MVP", T.getMatrix() * m_VP);
     ///Load in the mesh for the Enemy ship
-		m_enemies[i]->draw();
+		m_enemies[i].draw();
   }
-
-  m_enemies[2]->setVelocity(m_enemies[2]->getVelocity()+ ngl::Vec3(0.0, 0.05, 0.0));
 
   //qDebug() << "TESTTSTTST" << m_playerMesh->getBBox().maxX();
 }
@@ -201,44 +182,44 @@ void NGLScene::keyPressEvent(QKeyEvent *_event)
 
   /// W key to accelerate player up vertically
   case Qt::Key_W :
-        m_player->setVelocity(m_player->getVelocity()+ ngl::Vec3(0.0, 0.05, 0.0));
+				m_player.setVelocity(m_player.getVelocity()+ ngl::Vec3(0.0, 0.05, 0.0));
   break;
 
   /// S key to deccelerate
   case Qt::Key_S :
-        m_player->setVelocity(m_player->getVelocity()+ ngl::Vec3(0.0, -0.05, 0.0));
+				m_player.setVelocity(m_player.getVelocity()+ ngl::Vec3(0.0, -0.05, 0.0));
   break;
 
   /// A to strafe left
   case Qt::Key_A :
-        m_player->setVelocity(m_player->getVelocity()+ ngl::Vec3(0.0, 0.0, 0.05));
+				m_player.setVelocity(m_player.getVelocity()+ ngl::Vec3(0.0, 0.0, 0.05));
   break;
 
   /// D to strafe right
   case Qt::Key_D :
-        m_player->setVelocity(m_player->getVelocity()+ ngl::Vec3(0.0, 0.0, -0.05));
+				m_player.setVelocity(m_player.getVelocity()+ ngl::Vec3(0.0, 0.0, -0.05));
   break;
 
   /// ARROW Controls for filthy casuals,scrubs & n00bs
 
   /// UP key to accelerate player up vertically
   case Qt::Key_Up:
-        m_player->setVelocity(m_player->getVelocity()+ ngl::Vec3(0.0, 0.05, 0.0));
+				m_player.setVelocity(m_player.getVelocity()+ ngl::Vec3(0.0, 0.05, 0.0));
   break;
 
   /// S key to deccelerate
   case Qt::Key_Down :
-        m_player->setVelocity(m_player->getVelocity()+ ngl::Vec3(0.0, -0.05, 0.0));
+				m_player.setVelocity(m_player.getVelocity()+ ngl::Vec3(0.0, -0.05, 0.0));
   break;
 
   /// A to strafe left
   case Qt::Key_Left :
-        m_player->setVelocity(m_player->getVelocity()+ ngl::Vec3(0.0, 0.0, 0.05));
+				m_player.setVelocity(m_player.getVelocity()+ ngl::Vec3(0.0, 0.0, 0.05));
   break;
 
   /// D to strafe right
   case Qt::Key_Right:
-        m_player->setVelocity(m_player->getVelocity()+ ngl::Vec3(0.0, 0.0, -0.05));
+				m_player.setVelocity(m_player.getVelocity()+ ngl::Vec3(0.0, 0.0, -0.05));
   break;
 
   default : break;
@@ -274,38 +255,38 @@ void NGLScene::timerEvent(QTimerEvent *event)
 {
 
     ///update player position
-    m_player->setPos(m_player->getPos() + m_player->getVelocity());
+		m_player.setPos(m_player.getPos() + m_player.getVelocity());
     ///update player velocity
-    m_player->setVelocity(m_player->getVelocity()* 0.95f);
+		m_player.setVelocity(m_player.getVelocity()* 0.95f);
 
     ///update enemies position
     for(int i = 0; i < 5; ++i)
     {
-      m_enemies[i]->setPos(m_enemies[i]->getPos() + m_enemies[i]->getVelocity());
+			m_enemies[i].setPos(m_enemies[i].getPos() + m_enemies[i].getVelocity());
     }
 
     ///-----------------Player/Screen Border Detection
-    if (m_player->getPos().m_z > 40.0)
+		if (m_player.getPos().m_z > 40.0)
     {
-        m_player->setVelocity(ngl::Vec3(0.0,0.0,-1.0));
+				m_player.setVelocity(ngl::Vec3(0.0,0.0,-1.0));
         std::cout << "Player has gone offscreen.\n";
     }
 
-    if (m_player->getPos().m_z < -40.0)
+		if (m_player.getPos().m_z < -40.0)
     {
-        m_player->setVelocity(ngl::Vec3(0.0,0.0,1.0));
+				m_player.setVelocity(ngl::Vec3(0.0,0.0,1.0));
         std::cout << "Player has gone offscreen.\n";
     }
 
-    if (m_player->getPos().m_y > 30.0)
+		if (m_player.getPos().m_y > 30.0)
     {
-        m_player->setVelocity(ngl::Vec3(0.0,-1.0,0.0));
+				m_player.setVelocity(ngl::Vec3(0.0,-1.0,0.0));
         std::cout << "Player has gone offscreen.\n";
     }
 
-    if (m_player->getPos().m_y < -30.0)
+		if (m_player.getPos().m_y < -30.0)
     {
-        m_player->setVelocity(ngl::Vec3(0.0,1.0,0.0));
+				m_player.setVelocity(ngl::Vec3(0.0,1.0,0.0));
         std::cout << "Player has gone offscreen.\n";
     }
     ///--------------------------------------------------
@@ -313,18 +294,19 @@ void NGLScene::timerEvent(QTimerEvent *event)
     for (int i = 0; i<m_enemies.size(); i++)
     {
         ///sorry jon i know this is horrible
-        if ( isTouching (*m_player , *(m_enemies[i].get() ) ) )
+				if ( isTouching (m_player , m_enemies[i]) )
         {
-
+						m_player.setHealth(0);
+						exit(EXIT_FAILURE);
         }
     }
 
     paintGL();
     update();
-    //std::cout << m_player->getPos();
+		//std::cout << m_player.getPos();
 }
 
-bool NGLScene::isTouching(const GameObject &_lhs, const GameObject &_rhs)
+bool NGLScene::isTouching(const PlayerShip &_lhs, const PlayerShip &_rhs)
 {
 	ngl::Vec3 diff = _lhs.getCollisionCenter() - _rhs.getCollisionCenter();
 	float dist = diff.lengthSquared();
@@ -332,12 +314,8 @@ bool NGLScene::isTouching(const GameObject &_lhs, const GameObject &_rhs)
 	//float dist = diff.length();
 	//if( dist < _lhs.getCollisionRadius() + _rhs.getCollisionRadius() )
 
-    std::cout << _lhs.getCollisionRadius()<<","<< _rhs.getCollisionRadius()<<","<<dist<<std::endl;
-
 	if( dist < (_lhs.getCollisionRadius() * _lhs.getCollisionRadius()) + (_rhs.getCollisionRadius() * _rhs.getCollisionRadius()) )
-    {
-        std::cout<<"collision is happening"<<std::endl;
 		return true;
-    }
+
 	return false;
 }

@@ -25,6 +25,7 @@ public:
     /// @param ngl::vec3 stores position data
     /// @param int is the filename of the model used.
     //----------------------------------------------------------------------------------------------------------------------
+	PlayerShip() = default;
 		PlayerShip(ngl::Vec3, int, const std::string &_id);
     ~PlayerShip();
 

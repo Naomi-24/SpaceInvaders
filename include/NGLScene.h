@@ -116,22 +116,18 @@ private:
     ngl::Mat4 m_VP;
 
     /// variable for the player ship
-    PlayerShip *m_player;
+		PlayerShip m_player;
 
     std::unique_ptr<PlayerShip> boiboi;
 
     ///vector of enemy ships (stores enemies)
-    std::vector <std::unique_ptr<PlayerShip>> m_enemies;
-
-    /// Player Mesh pointer
-    /// please change code so that m_mesh is used through inhenritance instead///
-    std::unique_ptr<ngl::Obj> m_playerMesh;
+		std::vector <PlayerShip> m_enemies;
 
     /// Enemy Mesh pointer
     /// no longer used, enemies uses m_mesh through inheritance from GameObject///
     //std::unique_ptr<ngl::Obj> m_enemyMesh;
 
-		bool isTouching( const GameObject &_lhs, const GameObject &_rhs );
+		bool isTouching(const PlayerShip &_lhs, const PlayerShip &_rhs );
 };
 
 
