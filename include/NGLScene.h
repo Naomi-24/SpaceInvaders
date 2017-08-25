@@ -20,7 +20,7 @@
 /// @brief our main glwindow widget for NGL applications all drawing elements are
 /// put in this file
 /// edited for SpaceInvaders by Naomi Morgan
-/// contains main game loop
+/// contains main game loop and collision detection
 //----------------------------------------------------------------------------------------------------------------------
 
 class NGLScene : public QOpenGLWindow
@@ -28,7 +28,7 @@ class NGLScene : public QOpenGLWindow
   public:
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ///---PUBLIC FUNCTIONS
+    //---PUBLIC FUNCTIONS
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     //----------------------------------------------------------------------------------------------------------------------
@@ -66,7 +66,7 @@ class NGLScene : public QOpenGLWindow
 private:
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ///---PRIVATE FUNCTIONS
+    //---PRIVATE FUNCTIONS
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     //----------------------------------------------------------------------------------------------------------------------
@@ -97,28 +97,25 @@ private:
 
     //----------------------------------------------------------------------------------------------------------------------
     /// @brief
-    /// my code
     /// @param
     //----------------------------------------------------------------------------------------------------------------------
     void timerEvent(QTimerEvent *event) override;
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ///---PRIVATE ATTRIBUTES
+    //---PRIVATE ATTRIBUTES
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    /// @brief windows parameters for mouse control etc.
+    //windows parameters for mouse control etc.
     WinParams m_win;
 
     /// position for our model
-    ngl::Vec3 m_modelPos;
+    ngl::Vec3           m_modelPos;
 
     /// model view preojection matrix
-    ngl::Mat4 m_VP;
+    ngl::Mat4           m_VP;
 
     /// variable for the player ship
-    PlayerShip *m_player;
-
-    std::unique_ptr<PlayerShip> boiboi;
+    PlayerShip          *m_player;
 
     ///vector of enemy ships (stores enemies)
     std::vector <std::unique_ptr<PlayerShip>> m_enemies;
@@ -131,7 +128,17 @@ private:
     /// no longer used, enemies uses m_mesh through inheritance from GameObject///
     //std::unique_ptr<ngl::Obj> m_enemyMesh;
 
-		bool isTouching( const GameObject &_lhs, const GameObject &_rhs );
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //---PRIVATE FUNCTIONS
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    //----------------------------------------------------------------------------------------------------------------------
+    /// @brief Collision Detection using bounding spheres
+    /// @param [in] const GameObject &_lhs
+    /// @param [in] const GameObject &_rhs
+    //----------------------------------------------------------------------------------------------------------------------
+    bool isTouching( const GameObject &_lhs, const GameObject &_rhs );
+
 };
 
 

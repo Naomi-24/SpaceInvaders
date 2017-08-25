@@ -10,7 +10,7 @@
 #include <ngl/NGLStream.h>
 #include <QDebug>
 
-/// enum for different player ship models
+/// enum for different player ship models (to be added later)
 enum Model
 {
     BASIC,
@@ -25,14 +25,12 @@ NGLScene::NGLScene()
 
 }
 
-
 NGLScene::~NGLScene()
 {
   std::cout<<"Shutting down NGL, removing VAO's and Shaders\n";
-	GameObject::destroyMeshes();
+  ///clear the meshes
+  GameObject::destroyMeshes();
 }
-
-
 
 void NGLScene::resizeGL(int _w , int _h)
 {
@@ -44,7 +42,7 @@ void NGLScene::resizeGL(int _w , int _h)
 void NGLScene::createEnemy(ngl::Vec3 _spawnPos)
 {
    /// Add a new instance of an enemy to the storage vector
-	 m_enemies.push_back(std::unique_ptr<PlayerShip>(new PlayerShip(_spawnPos, BASIC, "Invader.obj" )));
+   m_enemies.push_back(std::unique_ptr<PlayerShip>(new PlayerShip(_spawnPos, BASIC, "Invader.obj" )));
    ///print out vector size to see how many enemies have been spawned
    std::cout<< "spawning " << m_enemies.size() << '\n';
 }
@@ -65,7 +63,9 @@ void NGLScene::initializeGL()
 //---------------------------------------------------------------------------------------------------------
 
   ///Create new instance of the player
-	m_player = new PlayerShip(ngl::Vec3(0.0f,0.0f,0.0f), BASIC, "Player.obj");
+  m_player = new PlayerShip(ngl::Vec3(0.0f,0.0f,0.0f), BASIC, "Player.obj");
+  ///Set max Health value of the player
+  m_player->setHealth(1000);
   ///Load in the mesh for the Player ship
   m_playerMesh.reset(new ngl::Obj("meshes/Player.obj"));
   m_playerMesh->createVAO();
@@ -112,10 +112,9 @@ void NGLScene::initializeGL()
   startTimer(25);
 
   /// Create Enemies
-  //ngl::Vec3 spawn = ngl::Vec3(0,5,5);
-  for(int i = 0; i < 5; ++i){
+  for(int i = 0; i < 5; ++i)
+  {
     createEnemy(ngl::Vec3(0.0f, 10.0f, 10.0f + i * 2.5f));
-
   }
 
 //--------------------------------------------------------------------------------------------------------
@@ -172,12 +171,12 @@ void NGLScene::paintGL()
     T.setPosition(m_enemies[i]->getPos()); ///in future this will use spawn position
     slib->setRegisteredUniform("MVP", T.getMatrix() * m_VP);
     ///Load in the mesh for the Enemy ship
-		m_enemies[i]->draw();
+    m_enemies[i]->draw();
   }
-
+  ///Set one of the enemies to move
   m_enemies[2]->setVelocity(m_enemies[2]->getVelocity()+ ngl::Vec3(0.0, 0.05, 0.0));
 
-  //qDebug() << "TESTTSTTST" << m_playerMesh->getBBox().maxX();
+  //qDebug() << "TEST" << m_playerMesh->getBBox().maxX();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -188,73 +187,70 @@ void NGLScene::keyPressEvent(QKeyEvent *_event)
   // we then switch on the key value and set the camera in the GLWindow
   switch (_event->key())
   {
-  // escape key to quit
-  case Qt::Key_Escape : QGuiApplication::exit(EXIT_SUCCESS);
-  break;
-  case Qt::Key_Space :
-      m_win.spinXFace=0;
-      m_win.spinYFace=0;
-  break;
+      // escape key to quit
+      case Qt::Key_Escape : QGuiApplication::exit(EXIT_SUCCESS);
+      break;
+      case Qt::Key_Space :
+          m_win.spinXFace=0;
+          m_win.spinYFace=0;
+      break;
 
-  //---------------------------my code below
-  /// WASD Controls
+      //---------------------------my code below
+      /// WASD Controls
 
-  /// W key to accelerate player up vertically
-  case Qt::Key_W :
-        m_player->setVelocity(m_player->getVelocity()+ ngl::Vec3(0.0, 0.05, 0.0));
-  break;
+      /// W key to accelerate player up vertically
+      case Qt::Key_W :
+            m_player->setVelocity(m_player->getVelocity()+ ngl::Vec3(0.0, 0.05, 0.0));
+      break;
 
-  /// S key to deccelerate
-  case Qt::Key_S :
-        m_player->setVelocity(m_player->getVelocity()+ ngl::Vec3(0.0, -0.05, 0.0));
-  break;
+      /// S key to deccelerate
+      case Qt::Key_S :
+            m_player->setVelocity(m_player->getVelocity()+ ngl::Vec3(0.0, -0.05, 0.0));
+      break;
 
-  /// A to strafe left
-  case Qt::Key_A :
-        m_player->setVelocity(m_player->getVelocity()+ ngl::Vec3(0.0, 0.0, 0.05));
-  break;
+      /// A to strafe left
+      case Qt::Key_A :
+            m_player->setVelocity(m_player->getVelocity()+ ngl::Vec3(0.0, 0.0, 0.05));
+      break;
 
-  /// D to strafe right
-  case Qt::Key_D :
-        m_player->setVelocity(m_player->getVelocity()+ ngl::Vec3(0.0, 0.0, -0.05));
-  break;
+      /// D to strafe right
+      case Qt::Key_D :
+            m_player->setVelocity(m_player->getVelocity()+ ngl::Vec3(0.0, 0.0, -0.05));
+      break;
 
-  /// ARROW Controls for filthy casuals,scrubs & n00bs
+      /// ARROW Controls for filthy casuals,scrubs & n00bs
 
-  /// UP key to accelerate player up vertically
-  case Qt::Key_Up:
-        m_player->setVelocity(m_player->getVelocity()+ ngl::Vec3(0.0, 0.05, 0.0));
-  break;
+      /// UP key to accelerate player up vertically
+      case Qt::Key_Up:
+            m_player->setVelocity(m_player->getVelocity()+ ngl::Vec3(0.0, 0.05, 0.0));
+      break;
 
-  /// S key to deccelerate
-  case Qt::Key_Down :
-        m_player->setVelocity(m_player->getVelocity()+ ngl::Vec3(0.0, -0.05, 0.0));
-  break;
+      /// S key to deccelerate
+      case Qt::Key_Down :
+            m_player->setVelocity(m_player->getVelocity()+ ngl::Vec3(0.0, -0.05, 0.0));
+      break;
 
-  /// A to strafe left
-  case Qt::Key_Left :
-        m_player->setVelocity(m_player->getVelocity()+ ngl::Vec3(0.0, 0.0, 0.05));
-  break;
+      /// A to strafe left
+      case Qt::Key_Left :
+            m_player->setVelocity(m_player->getVelocity()+ ngl::Vec3(0.0, 0.0, 0.05));
+      break;
 
-  /// D to strafe right
-  case Qt::Key_Right:
-        m_player->setVelocity(m_player->getVelocity()+ ngl::Vec3(0.0, 0.0, -0.05));
-  break;
+      /// D to strafe right
+      case Qt::Key_Right:
+            m_player->setVelocity(m_player->getVelocity()+ ngl::Vec3(0.0, 0.0, -0.05));
+      break;
 
-  default : break;
+      default : break;
   }
-  /// finally update the GLWindow and re-draw
 
-    update();
+  /// finally update the GLWindow and re-draw
+  update();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 void NGLScene::mouseMoveEvent( QMouseEvent* _event )
-{
+{}
 
-}
-
-//----------------------------------------------------------------------------------------------------------------------
 void NGLScene::mousePressEvent( QMouseEvent* _event )
 {
   // that method is called when the mouse button is pressed in this case we
@@ -263,13 +259,10 @@ void NGLScene::mousePressEvent( QMouseEvent* _event )
 
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 void NGLScene::mouseReleaseEvent( QMouseEvent* _event )
-{
-
-}
-
+{}
 //-----------------------------------------------------------------------------------------------------------------------
+
 void NGLScene::timerEvent(QTimerEvent *event)
 {
 
@@ -285,6 +278,7 @@ void NGLScene::timerEvent(QTimerEvent *event)
     }
 
     ///-----------------Player/Screen Border Detection
+
     if (m_player->getPos().m_z > 40.0)
     {
         m_player->setVelocity(ngl::Vec3(0.0,0.0,-1.0));
@@ -308,14 +302,19 @@ void NGLScene::timerEvent(QTimerEvent *event)
         m_player->setVelocity(ngl::Vec3(0.0,1.0,0.0));
         std::cout << "Player has gone offscreen.\n";
     }
-    ///--------------------------------------------------
 
+    ///-----------------Player/Enemy Collision Detection
+
+    /// for every enemy in the array...
     for (int i = 0; i<m_enemies.size(); i++)
     {
         ///sorry jon i know this is horrible
+        /// ...check to see if its touching the player
         if ( isTouching (*m_player , *(m_enemies[i].get() ) ) )
         {
-
+            ///the player takes damage if it colldes with enemies
+            m_player->setHealth((m_player->getHealth()) - 1);
+            std::cout<<"Player health is"<<m_player->getHealth()<<std::endl;
         }
     }
 
@@ -332,7 +331,7 @@ bool NGLScene::isTouching(const GameObject &_lhs, const GameObject &_rhs)
 	//float dist = diff.length();
 	//if( dist < _lhs.getCollisionRadius() + _rhs.getCollisionRadius() )
 
-    std::cout << _lhs.getCollisionRadius()<<","<< _rhs.getCollisionRadius()<<","<<dist<<std::endl;
+    //std::cout << _lhs.getCollisionRadius()<<","<< _rhs.getCollisionRadius()<<","<<dist<<std::endl;
 
 	if( dist < (_lhs.getCollisionRadius() * _lhs.getCollisionRadius()) + (_rhs.getCollisionRadius() * _rhs.getCollisionRadius()) )
     {

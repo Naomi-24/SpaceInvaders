@@ -7,54 +7,74 @@
 #include <unordered_map>
 //----------------------------------------------------------------------------------------------------------------------
 /// @file gameobject.h
-/// @brief the basic game entity class used for the game
+/// @brief the basic game entity class used for the game.
 /// @author Naomi Morgan
 /// @version 1.0
 /// @date 09/05/17
-/// @class gameobject
-/// @brief this class encapsulates the core state of all objects within the game, including drawing.
+/// @class GameObject
+/// @brief This class encapsulates the core state of all objects within the game, including drawing.
 //----------------------------------------------------------------------------------------------------------------------
 class GameObject
 {
 public:
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ///---PUBLIC ATTRIBUTES
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ///---PUBLIC FUNCTIONS
+    //---PUBLIC FUNCTIONS
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     //----------------------------------------------------------------------------------------------------------------------
     /// @brief ctr for GameObject class.
+    /// @param [in] const std::string _meshID
+    //----------------------------------------------------------------------------------------------------------------------
+    GameObject( const std::string _meshID );
+
+    //----------------------------------------------------------------------------------------------------------------------
+    /// @brief dtr for GameObject class.
     /// @param none
     //----------------------------------------------------------------------------------------------------------------------
-		GameObject( const std::string _meshID );
     ~GameObject();
 
     //----------------------------------------------------------------------------------------------------------------------
     /// @brief
-    /// @param
+    /// @param [in] ngl::Vec3
+    //----------------------------------------------------------------------------------------------------------------------
+    void move(ngl::Vec3);
+
+    //----------------------------------------------------------------------------------------------------------------------
+    /// @brief
+    /// @param none
     //----------------------------------------------------------------------------------------------------------------------
     void draw();
 
     //----------------------------------------------------------------------------------------------------------------------
     /// @brief
-    /// @param
+    /// @param none
     //----------------------------------------------------------------------------------------------------------------------
     void update();
 
     //----------------------------------------------------------------------------------------------------------------------
     /// @brief getter function for object position, retrieves value(s) of object position (m_pos)
-    /// @param returns position
+    /// @param none
     //----------------------------------------------------------------------------------------------------------------------
     inline ngl::Vec3 getPos() const { return m_pos; }
 
     //----------------------------------------------------------------------------------------------------------------------
     /// @brief getter function for object velocity, retrieves value(s) of object velocity (m_velocity)
-    /// @param
+    /// @param none
     //----------------------------------------------------------------------------------------------------------------------
     inline ngl::Vec3 getVelocity() const {return m_velocity;}
+
+    //----------------------------------------------------------------------------------------------------------------------
+    /// @brief getter function for position of bounding sphere centre point
+    /// @param none
+    //----------------------------------------------------------------------------------------------------------------------
+    ngl::Vec3 getCollisionCenter() const {return m_collisionCenter + getPos();}
+
+    //----------------------------------------------------------------------------------------------------------------------
+    /// @brief getter function for the length of radius of collision sphere
+    /// @param none
+    //----------------------------------------------------------------------------------------------------------------------
+    float getCollisionRadius() const {return m_collisionRadius;}
 
     //----------------------------------------------------------------------------------------------------------------------
     /// @brief setter function for object position, sets the value of the objects position value(s) (m_pos)
@@ -66,24 +86,18 @@ public:
     /// @brief setter function for object velocity, sets the value of the objects velocity value(s) (m_velocity)
     /// @param [in] & velocity
     //----------------------------------------------------------------------------------------------------------------------
-    void setVelocity(const ngl::Vec3& velocity) {m_velocity = velocity;}
+    void setVelocity(const ngl::Vec3 & velocity) {m_velocity = velocity;}
 
     //----------------------------------------------------------------------------------------------------------------------
-    /// @brief ctor for our NGL drawing class
-    /// @param [in] parent the parent window to the class
+    /// @brief Destroys all the meshes. Call this at the end of the game.
+    /// @param none
     //----------------------------------------------------------------------------------------------------------------------
-    void move(ngl::Vec3);
-
-        ngl::Vec3 getCollisionCenter() const {return m_collisionCenter + getPos();}
-		float getCollisionRadius() const {return m_collisionRadius;}
-
-        ///Destroys all the meshes. Call this at the end of the game.
-		static void destroyMeshes();
+    static void destroyMeshes();
 
 protected:
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ///---PROTECTED ATTRIBUTES
+    //---PROTECTED ATTRIBUTES
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     ///position of object
@@ -92,18 +106,38 @@ protected:
     ///velocity of object
     ngl::Vec3                   m_velocity;
 
-        ///Rather than storing its own mesh, each instance of game object stored an ID.
-        ///We use this id to grab the ngl::obj inside s_meshes that we want to use.
-		std::string m_meshID;
+    ///Rather than storing its own mesh, each instance of game object stored an ID.
+    ///We use this id to grab the ngl::obj inside s_meshes that we want to use.
+    std::string m_meshID;
 
 private:
-        ///All the meshes are going to be stored in this 'map'. It's a bit like an array, but we can access entries with strings rather than ints.
-		static std::unordered_map< std::string, ngl::Obj * > s_meshes;
-        ///This function loads a
-		static void loadMesh(const std::string &_id, const std::string &_path );
 
-		ngl::Vec3 m_collisionCenter;
-		float m_collisionRadius;
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //---PRIVATE ATTRIBUTES
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /// position of bounding sphere center
+    ngl::Vec3                   m_collisionCenter;
+
+    /// length of bounding sphere radius
+    float                       m_collisionRadius;
+
+    /// All the meshes are going to be stored in this 'map'. Like an array, but uses strings instead of ints
+    static std::unordered_map< std::string, ngl::Obj * > s_meshes;
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //---PUBLIC FUNCTIONS
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    //----------------------------------------------------------------------------------------------------------------------
+    /// @brief loads a mesh when called
+    /// @param [in] const std::string &_id
+    /// @param [in] const std::string &_path
+    //----------------------------------------------------------------------------------------------------------------------
+    static void loadMesh(const std::string &_id, const std::string &_path );
+
+
+
 };
 
 #endif // GAMEOBJECT_H
